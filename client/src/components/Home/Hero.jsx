@@ -7,12 +7,23 @@ const Hero = () => {
 
   const [menuOpen, setMenuOpen] = React.useState(false);
 
+  //! Logo URLs Not Found (404)
+  // const logos = [
+  //   "https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg",
+  //   "https://saasly.prebuiltui.com/assets/companies-logo/framer.svg",
+  //   "https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg",
+  //   "https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg",
+  //   "https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg",
+  // ];
+
   const logos = [
-    "https://saasly.prebuiltui.com/assets/companies-logo/instagram.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/framer.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/microsoft.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/huawei.svg",
-    "https://saasly.prebuiltui.com/assets/companies-logo/walmart.svg",
+    "https://svgl.app/library/firecrawl.svg",
+    "https://svgl.app/library/dingocoin.svg",
+    "https://svgl.app/library/base-ui.svg",
+    "https://svgl.app/library/ahrefs.svg",
+    "https://svgl.app/library/lottiefiles.svg",
+    "https://svgl.app/library/curseforge.svg",
+    "https://svgl.app/library/paper.svg",
   ];
 
   return (
