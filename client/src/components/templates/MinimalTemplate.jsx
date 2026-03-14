@@ -11,7 +11,6 @@ const MinimalTemplate = ({ data, accentColor }) => {
     });
   };
 
-
   return (
     <div className="max-w-4xl mx-auto p-8 bg-white text-gray-900 font-light">
       {/* Header: Name and Contact Info */}
@@ -81,7 +80,7 @@ const MinimalTemplate = ({ data, accentColor }) => {
       )}
 
       {/* Projects */}
-      {data.project && data.project.length > 0 && (
+      {data.projects && data.projects.length > 0 && (
         <section className="mb-10">
           <h2
             className="text-sm uppercase tracking-widest mb-6 font-medium"
@@ -92,13 +91,19 @@ const MinimalTemplate = ({ data, accentColor }) => {
 
           <div className="space-y-4">
             {/* Map through each project entry */}
-            {data.project.map((proj, index) => (
+            {data.projects.map((proj, index) => (
               <div
                 key={index}
                 className="flex flex-col gap-2 justify-between items-baseline"
               >
                 <h3 className="text-lg font-medium ">{proj.name}</h3>
                 {/* NOTE: Project descriptions are rendered without bullet points in this template */}
+                {/* Role / Project Type */}
+                {proj.type && (
+                  <span className="text-sm text-gray-500 font-normal">
+                    {proj.type}
+                  </span>
+                )}
                 <p className="text-gray-600">{proj.description}</p>
               </div>
             ))}

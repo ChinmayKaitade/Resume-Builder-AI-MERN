@@ -10,8 +10,6 @@ const ProjectForm = ({ data = [], onChange }) => {
       name: "",
       type: "",
       description: "",
-      live_link: "", // New field for project URL
-      technologies: "", // New field for technologies (e.g., "React, TailwindCSS")
     };
 
     // Use the spread operator to create a new array instance for immutability.
@@ -100,28 +98,6 @@ const ProjectForm = ({ data = [], onChange }) => {
                   onChange={(e) => updateProject(index, "type", e.target.value)}
                   type="text"
                   placeholder="Role / Project Type (e.g., Lead Developer)"
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-
-                {/* Live Link (New Field) */}
-                <input
-                  value={project.live_link || ""}
-                  onChange={(e) =>
-                    updateProject(index, "live_link", e.target.value)
-                  }
-                  type="url"
-                  placeholder="Live Link / GitHub URL"
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-
-                {/* Technologies Used (New Field) */}
-                <input
-                  value={project.technologies || ""}
-                  onChange={(e) =>
-                    updateProject(index, "technologies", e.target.value)
-                  }
-                  type="text"
-                  placeholder="Technologies Used (e.g., React, Node.js, AWS)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
 

@@ -43,7 +43,7 @@ const ResumeBuilder = () => {
     professional_summary: "",
     experience: [],
     education: [],
-    project: [],
+    projects: [],
     skills: [],
     template: "classic",
     accent_color: "#3b82f6",
@@ -91,7 +91,7 @@ const ResumeBuilder = () => {
       formData.append("resumeId", resumeId);
       formData.append(
         "resumeData",
-        JSON.stringify({ public: !resumeData.public })
+        JSON.stringify({ public: !resumeData.public }),
       );
 
       const { data } = await api.put("/api/resumes/update", formData, {
@@ -130,7 +130,7 @@ const ResumeBuilder = () => {
         .catch((error) => {
           console.error("Error sharing:", error);
           toast.error(
-            "Share failed. Check console for details or ensure you are on HTTPS."
+            "Share failed. Check console for details or ensure you are on HTTPS.",
           );
         });
     } else {
@@ -188,7 +188,7 @@ const ResumeBuilder = () => {
               {/* Progress Bar (Visual indicator of current section progress) */}
               <hr className="absolute top-0 left-0 right-0 border-2 border-gray-200" />
               <hr
-                className="absolute top-0 left-0 h-1 bg-gradient-to-r from-green-500 to-green-600 border-none transition-all duration-200"
+                className="absolute top-0 left-0 h-1 bg-linear-to-br from-green-500 to-green-600 border-none transition-all duration-200"
                 style={{
                   // Calculate width based on current index vs total sections
                   width: `${
@@ -229,7 +229,7 @@ const ResumeBuilder = () => {
                       onClick={() =>
                         setActiveSectionIndex((prevIndex) =>
                           // Decrement index, ensuring it doesn't go below 0
-                          Math.max(prevIndex - 1, 0)
+                          Math.max(prevIndex - 1, 0),
                         )
                       }
                       className="flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all"
@@ -244,7 +244,7 @@ const ResumeBuilder = () => {
                     onClick={() =>
                       setActiveSectionIndex((prevIndex) =>
                         // Increment index, ensuring it doesn't exceed the last section
-                        Math.min(prevIndex + 1, sections.length - 1)
+                        Math.min(prevIndex + 1, sections.length - 1),
                       )
                     }
                     className={`flex items-center gap-1 p-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition-all ${
@@ -321,12 +321,12 @@ const ResumeBuilder = () => {
                 {/* Project Form (Array of objects) */}
                 {activeSection.id === "projects" && (
                   <ProjectForm
-                    data={resumeData.project}
+                    data={resumeData.projects}
                     onChange={(data) =>
                       // Updater function for the project array
                       setResumeData((prev) => ({
                         ...prev,
-                        project: data,
+                        projects: data,
                       }))
                     }
                   />
@@ -352,7 +352,7 @@ const ResumeBuilder = () => {
                 onClick={() => {
                   toast.promise(saveResume, { loading: "Saving..." });
                 }}
-                className="bg-gradient-to-br from-green-100 to-green-200 ring-green-300 text-gray-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm"
+                className="bg-linear-to-br from-green-100 to-green-200 ring-green-300 text-gray-600 ring hover:ring-green-400 transition-all rounded-md px-6 py-2 mt-6 text-sm"
               >
                 Save Changes
               </button>
@@ -368,7 +368,7 @@ const ResumeBuilder = () => {
                 {resumeData.public && (
                   <button
                     onClick={handleShare}
-                    className="flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors"
+                    className="flex items-center p-2 px-4 gap-2 text-xs bg-linear-to-br from-blue-100 to-blue-200 text-blue-600 rounded-lg ring-blue-300 hover:ring transition-colors"
                   >
                     <Share2Icon className="size-4" /> Share
                   </button>
@@ -377,7 +377,7 @@ const ResumeBuilder = () => {
                 {/* Visibility Toggle Button (Public/Private) */}
                 <button
                   onClick={changeResumeVisibility}
-                  className="flex items-center p-2 px-4 gap-2 text-xs bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300 rounded-l-2xl hover:ring transition-colors"
+                  className="flex items-center p-2 px-4 gap-2 text-xs bg-linear-to-br from-purple-100 to-purple-200 text-purple-600 ring-purple-300 rounded-l-2xl hover:ring transition-colors"
                 >
                   {resumeData.public ? (
                     <EyeIcon className="size-4" />
@@ -392,7 +392,7 @@ const ResumeBuilder = () => {
                 <button
                   onClick={downloadResume}
                   className="flex items-center gap-2 px-6 py-2 text-xs
-                  bg-gradient-to-br from-green-100 to-green-200 text-green-600 rounded-lg ring-green-300 hover:ring transition-colors"
+                  bg-linear-to-br from-green-100 to-green-200 text-green-600 rounded-lg ring-green-300 hover:ring transition-colors"
                 >
                   <DownloadIcon className="size-4" /> Download
                 </button>

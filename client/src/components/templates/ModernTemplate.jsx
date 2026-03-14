@@ -1,4 +1,11 @@
-import { Mail, Phone, MapPin, Linkedin, Globe } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Globe,
+  ExternalLink,
+} from "lucide-react";
 import React from "react";
 
 const ModernTemplate = ({ data, accentColor }) => {
@@ -142,7 +149,7 @@ const ModernTemplate = ({ data, accentColor }) => {
         )}
 
         {/* Projects (Timeline Style) */}
-        {data.project && data.project.length > 0 && (
+        {data.projects && data.projects.length > 0 && (
           <section className="mb-8">
             <h2 className="text-2xl font-light mb-4 pb-2 border-b border-gray-200">
               Projects
@@ -150,7 +157,7 @@ const ModernTemplate = ({ data, accentColor }) => {
 
             <div className="space-y-6">
               {/* Map through each project entry */}
-              {data.project.map((p, index) => (
+              {data.projects.map((p, index) => (
                 <div
                   key={index}
                   className="relative pl-6 border-l border-gray-200"
@@ -162,9 +169,19 @@ const ModernTemplate = ({ data, accentColor }) => {
                       <h3 className="text-lg font-medium text-gray-900">
                         {p.name}
                       </h3>
+
+                      {p.type && (
+                        <p
+                          className="text-sm font-medium mb-1"
+                          style={{ color: accentColor }}
+                        >
+                          {p.type}
+                        </p>
+                      )}
                       {/* NOTE: Project type/date is not displayed in this part of the template */}
                     </div>
                   </div>
+
                   {p.description && (
                     <div className="text-gray-700 leading-relaxed text-sm mt-3">
                       {p.description}
