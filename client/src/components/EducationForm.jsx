@@ -21,23 +21,25 @@ const EducationForm = ({ data, onChange }) => {
   const updateEducation = (index, field, value) => {
     const updated = [...data];
 
-    // Validation for GPA
+    // Validation for GPA/CGPA
     if (field === "gpa") {
-      // Allow empty string so user can clear the field
+      // 1. Allow empty string so user can clear the field
       if (value === "") {
         updated[index] = { ...updated[index], [field]: value };
         onChange(updated);
         return;
       }
 
-      const numericValue = parseFloat(value);
+      // 2. Prevent entering values greater than 10.00
+      if (parseFloat(value) > 10) return;
 
-      // 1. Ensure it is a valid number
-      // 2. Prevent negative values
-      // 3. Prevent values greater than 10.00
-      if (isNaN(numericValue) || numericValue < 0 || numericValue > 10) {
-        return;
-      }
+      // 3. Strict Regex:
+      // ^(0|[1-9]|10) -> Only allowed start: 0, 1-9, or 10
+      // (\.\d{0,2})?$ -> Optional dot followed by exactly 0, 1, or 2 digits
+      // This prevents 00000... or 0.00000...
+      const regex = /^(0|[1-9]|10)(\.\d{0,2})?$/;
+
+      if (!regex.test(value)) return;
     }
 
     updated[index] = { ...updated[index], [field]: value };
@@ -67,7 +69,6 @@ const EducationForm = ({ data, onChange }) => {
         <div className="text-center py-8 text-gray-500">
           <GraduationCap className="w-12 h-12 mx-auto mb-3 text-gray-300" />
           <p>No education added yet.</p>
-          <p className="text-sm">Click "Add Education" to get started.</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -77,7 +78,9 @@ const EducationForm = ({ data, onChange }) => {
               className="p-4 border border-gray-200 rounded-lg space-y-3"
             >
               <div className="flex justify-between items-start">
-                <h4>Education #{index + 1}</h4>
+                <h4 className="font-medium text-gray-700">
+                  Education #{index + 1}
+                </h4>
                 <button
                   onClick={() => removeEducation(index)}
                   className="text-red-500 hover:text-red-700 transition-colors"
@@ -103,7 +106,7 @@ const EducationForm = ({ data, onChange }) => {
                     updateEducation(index, "degree", e.target.value)
                   }
                   type="text"
-                  placeholder="Degree (e.g., Bachelor's, Master's)"
+                  placeholder="Degree (e.g., Bachelor's)"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
 
@@ -127,21 +130,22 @@ const EducationForm = ({ data, onChange }) => {
                 />
               </div>
 
-              {/* GPA Input with max limit */}
               <div className="space-y-1">
                 <label className="text-xs text-gray-500 ml-1">
-                  GPA / CGPA (Max 10.00)
+                  GPA / CGPA (0.00 - 10.00)
                 </label>
                 <input
                   value={education.gpa || ""}
                   onChange={(e) =>
                     updateEducation(index, "gpa", e.target.value)
                   }
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  max="10" // Browser-level validation
-                  placeholder="GPA (e.g., 9.5)"
+                  // Prevents symbols like +, -, and e
+                  onKeyDown={(e) =>
+                    ["e", "E", "+", "-"].includes(e.key) && e.preventDefault()
+                  }
+                  // 'text' type combined with pattern works best for strict decimal control
+                  type="text"
+                  placeholder="e.g., 9.50"
                   className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 w-full"
                 />
               </div>
