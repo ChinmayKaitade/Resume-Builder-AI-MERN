@@ -1,52 +1,85 @@
-import { Plus, Trash2 } from "lucide-react";
-import React from "react";
+import { Folder, Loader2, Plus, Sparkles, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import api from "../configs/api";
+import toast from "react-hot-toast";
 
-// 1. FIX: Set 'data' prop to an empty array '[]' by default
-// to prevent "Cannot read properties of undefined (reading 'map')" error.
 const ProjectForm = ({ data = [], onChange }) => {
+  const { token } = useSelector((state) => state.auth);
+  const [generatingIndex, setGeneratingIndex] = useState(-1);
+
   const addProject = () => {
-    // 2. ENHANCEMENT: Define the structure of a new project entry with new fields.
     const newProject = {
       name: "",
       type: "",
       description: "",
+      link: "",
+      technologies: "",
     };
-
-    // Use the spread operator to create a new array instance for immutability.
     onChange([...data, newProject]);
   };
 
   const removeProject = (index) => {
-    // Filter the array, keeping only items whose index does not match.
     const updated = data.filter((_, i) => i !== index);
-
-    // Pass the new filtered array back to the parent state.
     onChange(updated);
   };
 
   const updateProject = (index, field, value) => {
-    // 1. Create a shallow copy of the main array.
     const updated = [...data];
-
-    // 2. Create a shallow copy of the specific object and update the field.
     updated[index] = { ...updated[index], [field]: value };
-
-    // Pass the new array back to the parent state.
     onChange(updated);
   };
 
+  const generateDescription = async (index) => {
+    const project = data[index];
+
+    if (!project.name || !project.type) {
+      toast.error("Please fill in the Project Name and Type/Role first.");
+      return;
+    }
+
+    setGeneratingIndex(index);
+
+    // UPDATED PROMPT: Explicitly asking for 3 dot bullet points
+    const prompt = `Enhance this project description: "${project.description}" for a project named "${project.name}" where my role was "${project.type}". 
+    CRITICAL INSTRUCTION: Provide exactly 3 concise and professional dot bullet points (using the • symbol). Do not use stars (*) or dashes (-).`;
+
+    try {
+      const { data: responseData } = await api.post(
+        "/api/ai/enhance-job-desc",
+        {
+          promptContent: prompt,
+        },
+        {
+          headers: {
+            Authorization: token,
+          },
+        },
+      );
+
+      updateProject(index, "description", responseData.enhancedContent);
+      toast.success("Project Description Enhanced Successfully!");
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to generate description.";
+      toast.error(errorMessage);
+    } finally {
+      setGeneratingIndex(-1);
+    }
+  };
+
   return (
-    <div>
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
             Projects
           </h3>
-
-          <p className="text-sm text-gray-500">Add your Projects</p>
+          <p className="text-sm text-gray-500">Add your portfolio projects</p>
         </div>
 
-        {/* Button to Add a new Project Entry */}
         <button
           onClick={addProject}
           className="flex items-center gap-2 px-3 py-1 text-sm bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors"
@@ -56,23 +89,22 @@ const ProjectForm = ({ data = [], onChange }) => {
         </button>
       </div>
 
-      {/* Project List Container */}
-      <div className="space-y-4 mt-6">
-        {/* 3. ENHANCEMENT: Show a placeholder if no projects are added. */}
-        {data.length === 0 ? (
-          <div className="text-center p-8 border-2 border-dashed border-gray-300 rounded-lg text-gray-500">
-            Click "Add Project" to start listing your portfolio projects.
-          </div>
-        ) : (
-          /* Map through all project entries to render individual form blocks */
-          data.map((project, index) => (
+      {data.length === 0 ? (
+        <div className="text-center py-8 text-gray-500">
+          <Folder className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>No projects added yet.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {data.map((project, index) => (
             <div
-              key={index} // Key is used here for mapping stability.
+              key={index}
               className="p-4 border border-gray-200 rounded-lg space-y-3"
             >
               <div className="flex justify-between items-start">
-                {/* Title and Remove Button */}
-                <h4>Project #{index + 1}</h4>
+                <h4 className="font-medium text-gray-700">
+                  Project #{index + 1}
+                </h4>
                 <button
                   onClick={() => removeProject(index)}
                   className="text-red-500 hover:text-red-700 transition-colors"
@@ -81,41 +113,62 @@ const ProjectForm = ({ data = [], onChange }) => {
                 </button>
               </div>
 
-              {/* Input Fields for a Single Project */}
-              <div className="grid gap-3">
-                {/* Project Name */}
+              <div className="grid md:grid-cols-2 gap-3">
                 <input
                   value={project.name || ""}
                   onChange={(e) => updateProject(index, "name", e.target.value)}
                   type="text"
                   placeholder="Project Name"
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"
                 />
 
-                {/* Project Type/Role */}
                 <input
                   value={project.type || ""}
                   onChange={(e) => updateProject(index, "type", e.target.value)}
                   type="text"
-                  placeholder="Role / Project Type (e.g., Lead Developer)"
-                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  placeholder="Role / Project Type"
+                  className="px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none"
                 />
+              </div>
 
-                {/* Description Textarea */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-gray-700">
+                    Project Description
+                  </label>
+
+                  <button
+                    onClick={() => generateDescription(index)}
+                    disabled={
+                      generatingIndex === index ||
+                      !project.name ||
+                      !project.type
+                    }
+                    className="flex items-center gap-1 px-2 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors disabled:opacity-50"
+                  >
+                    {generatingIndex === index ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="w-3 h-3" />
+                    )}
+                    Enhance with AI
+                  </button>
+                </div>
+
                 <textarea
                   rows={4}
                   value={project.description || ""}
                   onChange={(e) =>
                     updateProject(index, "description", e.target.value)
                   }
-                  placeholder="Describe your project, your contributions, and the outcomes..."
-                  className="w-full px-3 py-2 text-sm rounded-lg resize-none border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full text-sm px-3 py-2 rounded-lg border border-gray-300 focus:ring-1 focus:ring-blue-500 outline-none resize-none whitespace-pre-line"
+                  placeholder="Example: • Developed X... \n• Optimized Y... \n• Delivered Z..."
                 />
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
